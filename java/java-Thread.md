@@ -89,7 +89,7 @@ public class code {
 
 
 ```
-<p>실행 결</p>
+<p>실행 결과</p>
 <pre><code>Count: 0
 Count: 1
 Count: 0
@@ -157,7 +157,7 @@ public class Code {
 
 <h2>3. 스레드 메소드</h2>
 
-><h4><b>join 메서드</b></h4>
+><h4><b>Thread.join()</b></h4>
 ><p>순서를 보장하려면 Thread.class의 join 메서드를 사용할 수 있다. </p>
 
 <p> Thread.join(long millis)메서드를 호출하면 해당 쓰레드 객체에 millis 변수 시간 만큼 CPU사용권을 넘기고, 일시정지 상태가 된다.</p>
@@ -197,20 +197,81 @@ public class Code {
 <pre><code>
  ABABABABAB...
 </code></pre>
-<p>두 스레드가 순서를 지키며 실행되고 있는 모습이다.</p>
+<p> tdA스레드가 실행되고 tdA.join()으로 인해 tdA 스레드가 종료될 때까지 기다리고 tdB를 호출한다. 그 결과 tdA가 실행된 뒤 tdB가 실행되는 결과를 도출할 수 있다.</p>
 
-><h4><b>sleep 메서드</b></h4>
-><p>sleep 메소드 설명</p>
+><h4><b>Thread.sleep()</b></h4>
+><p>Thread.sleep() 메서드는 현재 실행 중인 스레드를 지정된 시간(밀리초 단위) 동안 일시적으로 중지시킨다. 이 메서드를 호출하면 현재 스레드는 지정된 시간 동안 대기 상태가 된다. </p>
 
 
 <h3>구현 예제</h3>
 
 ```java
-	
-```
-<p>추가 설명</p>
 
-><h4><b>getName 메서드</b></h4>
+import java.time.LocalTime;
+
+public class MyThread implements Runnable{
+	String order;
+	int time;
+	public MyThread(String order, int time) {
+		this.order = order;
+		this.time = time;
+	}
+	
+	@Override
+	public void run() {
+		
+		try {
+			System.out.print(order + " thread start in ");
+			LocalTime startTime = LocalTime.now();
+			System.out.println(startTime.getSecond());
+			
+			Thread.sleep(time);
+			
+			System.out.print(order + " thread end at ");
+			LocalTime endTime = LocalTime.now();
+			System.out.println(endTime.getSecond());
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+}
+
+
+```
+
+```java
+
+public class Code {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		MyThread td1 = new MyThread("first", 3000);
+		MyThread td2 = new MyThread("second", 1000);
+		Thread tdA = new Thread(td1);
+		Thread tdB = new Thread(td2);
+		
+		tdA.run();
+		tdB.run();
+		
+		
+	}
+
+}
+
+```
+
+<p>실행 결과</p>
+<pre><code>
+first thread start in 24
+first thread end at 27
+second thread start in 27
+second thread end at 28
+</code></pre>
+<p>Runnable은 run()메서드만 사용할 수 있지만 Thread의 sleep()은 static 메서드기 때문에 Runnable 내부에서도 사용이 가능하다. </p>
+<p>실행 결과를 살펴보면 지정한 밀리초 만큼 스레드가 일시정지 후 깨어난다.</p>
+<p>또한 다른 스레드는 현재 휴면 중인 스레드를 중단할 수 있으나, InterruptedException이 발생한다.</p>
+
+><h4><b>Thread.getName()</b></h4>
 ><p>getName 메소드 설명</p>
 <h3>구현 예제</h3>
 
