@@ -8,7 +8,7 @@
 3. 스레드 주 메소드
 	1. join()
  	2. sleep()
- 	3. getName()
+ 	3. set,getPriority()
 4. 데몬 스레드
 5. 동기화
 - - -
@@ -157,7 +157,7 @@ public class Code {
 
 <h2>3. 스레드 메소드</h2>
 
-><h4><b>Thread.join()</b></h4>
+>### Thread.join()
 ><p>순서를 보장하려면 Thread.class의 join 메서드를 사용할 수 있다. </p>
 
 <p> Thread.join(long millis)메서드를 호출하면 해당 쓰레드 객체에 millis 변수 시간 만큼 CPU사용권을 넘기고, 일시정지 상태가 된다.</p>
@@ -199,7 +199,9 @@ public class Code {
 </code></pre>
 <p> tdA스레드가 실행되고 tdA.join()으로 인해 tdA 스레드가 종료될 때까지 기다리고 tdB를 호출한다. 그 결과 tdA가 실행된 뒤 tdB가 실행되는 결과를 도출할 수 있다.</p>
 
-><h4><b>Thread.sleep()</b></h4>
+----
+
+>### Thread.sleep()
 ><p>Thread.sleep() 메서드는 현재 실행 중인 스레드를 지정된 시간(밀리초 단위) 동안 일시적으로 중지시킨다. 이 메서드를 호출하면 현재 스레드는 지정된 시간 동안 대기 상태가 된다. </p>
 
 
@@ -271,14 +273,81 @@ second thread end at 28
 <p>실행 결과를 살펴보면 지정한 밀리초 만큼 스레드가 일시정지 후 깨어난다.</p>
 <p>또한 다른 스레드는 현재 휴면 중인 스레드를 중단할 수 있으나, InterruptedException이 발생한다.</p>
 
-><h4><b>Thread.getName()</b></h4>
-><p>getName 메소드 설명</p>
+---
+
+>### getPriority(), setPriority(int priority)
+><p>모든 스레드는 1부터 10까지의 우선순위를 가진다. 1이 낮고 10이 높은 우선순위이다. 우선순위 기 값은 5이다. </p>
+><p>두 가지 작업이 동시에 실행되고 있을 때, 우선순위가 높은 작업이 더 많은 시간을 할당받는다. 같은 작업량을 가지면 우선순위가 높은 스레드가 먼저 끝난다.</p>
+><p>getPriority()로 우선순위를 가져오고, setPriority(int priority) 를 통해 스레드의 우선순위를 정할 수 있다.</p>
 <h3>구현 예제</h3>
 
 ```java
-	
+
+public class PriorityThread extends Thread {
+	int cnt;
+	String name;
+	public PriorityThread(int cnt, String name) {
+		this.cnt = cnt;
+		this.name = name;
+	}
+	public void run() {
+		for(int i=0; i < cnt; i ++) {
+			System.out.println(name + " "+ " Thread run " + i + " time");
+			
+		}
+		
+	}
+}
+
 ```
-추가 설명
+
+```java
+
+public class code {
+
+	public static void main(String[] args) {
+
+		Thread td1 = new PriorityThread(10, "MAX P");
+		Thread td2 = new PriorityThread(10, "MIN P");
+		
+		td1.setPriority(10);
+		td2.setPriority(1);
+		
+		td1.start();
+		td2.start();
+		
+	}
+
+}
+
+```
+
+<p>실행 결과</p>
+<pre><code>
+MAX P  Thread run 0 time
+MAX P  Thread run 1 time
+MIN P  Thread run 0 time
+MAX P  Thread run 2 time
+MIN P  Thread run 1 time
+MAX P  Thread run 3 time
+MIN P  Thread run 2 time
+MAX P  Thread run 4 time
+MAX P  Thread run 5 time
+MAX P  Thread run 6 time
+MIN P  Thread run 3 time
+MAX P  Thread run 7 time
+MIN P  Thread run 4 time
+MAX P  Thread run 8 time
+MAX P  Thread run 9 time
+MIN P  Thread run 5 time
+MIN P  Thread run 6 time
+MIN P  Thread run 7 time
+MIN P  Thread run 8 time
+MIN P  Thread run 9 time
+</code></pre>
+우선순위를 높게 측정한 MAX P 스레드가 더 먼저 실행된다. 결과를 보면 우선순위가 항상 스레드의 실행 순서를 보장하지 않는다.
+왜냐하면 스레드는 실행 전 준비 시간을 가지기 때문에, 실행 시간이 짧은 스레드의 경우 결과가 불규칙하게 나올 수 있다.
+
 
 ## 4. 데몬 스레드
 
