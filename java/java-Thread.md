@@ -10,7 +10,7 @@
  	2. sleep()
  	3. set,getPriority()
 4. 데몬 스레드
-5. 동기화
+5. 스레드 동기화
 - - -
 <h3>스레드</h3>
 <p> 스레드의 사전적 의미는 실행 흐름의 단위이나, 스레드와 Java에서의 스레드는 다르다.</p>
@@ -161,7 +161,7 @@ public class Code {
 ><p>순서를 보장하려면 Thread.class의 join 메서드를 사용할 수 있다. </p>
 
 <p> Thread.join(long millis)메서드를 호출하면 해당 쓰레드 객체에 millis 변수 시간 만큼 CPU사용권을 넘기고, 일시정지 상태가 된다.</p>
-<p> 즉, join이 선언된 특정 스레드는 millis 시간 만큼의 CPU를 우선적으로 사용하고 다른 스레드는 join이 선언된 스레드가 종료될 때까지 기다리게 된다.</p>
+<p> 즉 join이 선언된 특정 스레드는 millis 시간 만큼의 CPU를 우선적으로 사용하고 다른 스레드는 join이 선언된 스레드가 종료될 때까지 기다리게 된다.</p>
 
 <h3>구현 예제</h3>
 
@@ -276,9 +276,10 @@ second thread end at 28
 ---
 
 >### getPriority(), setPriority(int priority)
-><p>모든 스레드는 1부터 10까지의 우선순위를 가진다. 1이 낮고 10이 높은 우선순위이다. 우선순위 기 값은 5이다. </p>
+><p>모든 스레드는 1부터 10까지의 우선순위를 가진다. 1이 낮고 10이 높은 우선순위이다. 우선순위 기본 값은 5이다. </p>
 ><p>두 가지 작업이 동시에 실행되고 있을 때, 우선순위가 높은 작업이 더 많은 시간을 할당받는다. 같은 작업량을 가지면 우선순위가 높은 스레드가 먼저 끝난다.</p>
 ><p>getPriority()로 우선순위를 가져오고, setPriority(int priority) 를 통해 스레드의 우선순위를 정할 수 있다.</p>
+
 <h3>구현 예제</h3>
 
 ```java
@@ -351,6 +352,85 @@ MIN P  Thread run 9 time
 
 ## 4. 데몬 스레드
 
+<p>데몬 스레드(daemon thread)는 일반 스레드가 종료될 때 같이 종료되는 스레드를 의미한다.
+<p>일반 스레드는 다른 스레드가 종료되어도 자신의 스레드를 계속 실행하지만, 데몬 스레드는 다른 스레드기 종료되면, 실행 중인 자신의 스레드를 종료한다.</p>
 
+<p>데몬스레드 예시로는 Garbage Collector가 있다. GC는 프로그램이 실행되는 동안 메모리 관리를 하지만 주 프로그램이 종료될 때 같이 종료된다는 특성이 있다.</p>
+<p>또한 자동 저장 기능이 있는 문서 프로그램에도 활용될 수 있다. 지정한 시간 마다 자동 저장 기능이 작동하지만 메인 프로그램을 종료하면 함께 종료한다.</p>
+
+### 구현 예제
+
+```java
+
+public class MyThread extends Thread{
+
+	public void run() {
+		System.out.println((isDaemon() ? "데몬스레드":"일반스레드") + " 실행");
+		for(int i=1; i< 10000; i++) {
+			System.out.println("Count: " + i);
+			try {
+				Thread.sleep(1000);
+			}catch (Exception e) {}
+		}
+	}
+
+}
+
+```
+
+```java
+
+
+public class Code {
+
+	public static void main(String[] args) {
+
+		Thread td1 = new MyThread();
+		td1.setDaemon(true);
+		td1.start();
+		
+		try {
+			Thread.sleep(10000);
+			System.out.println("main Thread end");
+		}catch (Exception e) {
+			
+		}
+	}
+
+}
+
+
+```
+실행결과
+
+```
+데몬스레드 실행
+Count: 1
+Count: 2
+Count: 3
+Count: 4
+Count: 5
+Count: 6
+Count: 7
+Count: 8
+Count: 9
+Count: 10
+main Thread end
+
+```
+<p>setDaemon으로 데몬 스레드를 지정한다. 데몬 스레드는 10000번 반복으로 1초마다 실행하지만, 10초 뒤 메인 스레드가 종료되면서 같이 종료되는 것을 볼 수 있다.</p>
+<p>하지만 꼭 메인 스레드가 종료되어야 데몬 스레드가 종료되는 것은 아니다. 즉 **메인 스레드가 종료되어도 다른 스레드가 실행되고 있으면 데몬 스레드는 종료되지 않는다.** </p>
+<p>데몬 스레드는 다른 모든 스레드가 종료되어야 같이 종료하는 조건이기 때문이다. </p>
+
+## 5. 스레드 동기화
+
+<p>동기화 개념</p>
+
+### 구현 예제
+
+```java
+
+
+```
 
 
