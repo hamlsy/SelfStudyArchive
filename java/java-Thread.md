@@ -424,13 +424,98 @@ main Thread end
 
 ## 5. 스레드 동기화
 
-<p>동기화 개념</p>
+<p>동기화(synchronized)는 멀티 스레드 환경 속에서 데이터 일관성 문제를 방지한다. 쉽게 말해, 하나의 작업이 완전히 끝나야 다른 작업을 수행하는 것을 의미한다. 반대로 비동기(asynchronous)는 작업 완료 여부와 상관 없이 다른 작업을 수행하는 개념이다.</p>
+<p>다음 예제를 통해 동기화가 필요한 이유를 살펴보자.</p>
 
 ### 구현 예제
 
 ```java
 
+public class Board {
+	int view = 0;
+	
+	public void lookUp() {
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		this.view += 1;
+	}
+}
+
+```
+
+```java
+
+public class MyThread extends Thread{
+	Board board;
+	
+	public MyThread(Board board) {
+		this.board = board;
+	}
+	
+	public void run() {
+		board.lookUp();
+		System.out.println("조회수: " + board.view);
+	}
+
+}
+
+```
+
+```java
+
+public class Code {
+
+	public static void main(String[] args) {
+		Board board = new Board();
+		
+		
+		for(int i=0;i<1000;i++) {
+			Thread td1 = new MyThread(board);
+			td1.start();
+		}
+		
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		System.out.println("최종 조회수: "+board.view);
+		
+	}
+
+}
+
+```
+
+실행결과
+
+```
+...
+
+최종 조회수: 998
+
+```
+
+<p>Board 클래스의 조회수를 증가시키는 스레드를 만들었다. 그리고 1000번 반복하여 조회수를 증가시켰지만 결과는 1000이 아닌 998이 나왔다. </p>
+<p>그 이유는 view 필드에 하나의 스레드가 작업 중일 때 다른 스레드가 변경 작업을 수행했기 때문이다. 즉 먼저 작업 중인 스레드가 끝나지 않았기 때문에 값이 변하지 않는 현상이 생긴다.</p>
+<p>가벼운 예시로 1000번을 수행했지만, 트래픽이 거대한 사이트의 경우 멀티 스레드의 동기화가 적용되지 않으면 다양한 문제가 생길 것이다.</p>
+
+<p>그렇다면 동기화를 적용해보자. 동기화는 2종류가 있다.</p>
+
+## 5.1 메서드 동기화
+
+```java
 
 ```
 
 
+## 5.2 블록 동기화
+
+
+```java
+
+```
